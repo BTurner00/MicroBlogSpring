@@ -18,6 +18,8 @@ public class MicroBlogSpringController {
 
     ArrayList<Message> messages = new ArrayList<>();
 
+
+    //GET route -- reads username from session and adds to model. adds messages arraylist to model
     @RequestMapping(path = "/", method = RequestMethod.GET)
     public String home(Model model, HttpSession session) {
 
@@ -33,6 +35,8 @@ public class MicroBlogSpringController {
 
     }
 
+
+    //login route --  saves username to session
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public String login(String username, HttpSession session) {
         session.setAttribute("username", username);
@@ -40,6 +44,8 @@ public class MicroBlogSpringController {
 
     }
 
+
+    //add message route -- takes input from form and saves to a new message object. adds message to arraylist
     @RequestMapping(path = "/add-message", method = RequestMethod.POST)
     public String addmessage(String text, HttpSession session) {
 
@@ -49,6 +55,7 @@ public class MicroBlogSpringController {
 
     }
 
+    //logout method -- invalidates session
     @RequestMapping(path = "/logout", method = RequestMethod.POST)
     public String logout(HttpSession session) {
         session.invalidate();
@@ -56,6 +63,8 @@ public class MicroBlogSpringController {
         return "redirect:/";
     }
 
+
+    //delete route -- removes message of given id from arraylist. re-orders all ids higher than one deleted to prevent index/id mismatches
     @RequestMapping(path = "/delete", method = RequestMethod.POST)
     public String delete(int id) {
         messages.remove(id);

@@ -28,13 +28,13 @@
     <input type="text" name="text" placeholder="Enter your message" />
     <button type="submit">Submit</button>
 </form>
-
-Messages by {{user}}: <br>
+<br/>
+Messages by {{user}}: <br/>
 <ol>
     {{#messages}}
     <li>{{message}} </li>
-    <form action="/delete" method="post" style="display: inline-block;">
-        <input type="hidden" name="id" value="{{id}}"/>
+    <form action="/delete" method="post" style="display: inline;">
+        <input type="hidden" name="id" value="{{id}}" />
         <button type="submit">Delete</button>
     </form>
     {{/messages}}
