@@ -17,8 +17,16 @@ public class Message {
     @Column(nullable=false)
     String message;
 
-    public Message( String message) {
+    public Message(String message) {
 
+        this.message = message;
+    }
+
+    public Message() {
+    }
+
+    public Message(int id, String message) {
+        this.id = id;
         this.message = message;
     }
 }

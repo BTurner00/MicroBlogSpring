@@ -9,11 +9,10 @@
 <html>
 <body>
 
-<br>
-<br>
 {{^user}}
 <form action="/login" method="post">
     <input type="text" name="username" placeholder="Enter your name"/>
+    <input type="password" name="password" placeholder="Password"/>
     <button type="submit">Login</button>
 </form>
 {{/user}}
@@ -29,14 +28,22 @@
     <button type="submit">Submit</button>
 </form>
 <br/>
-Messages by {{user}}: <br/>
+
 <ol>
     {{#messages}}
-    <li>{{message}} </li>
-    <form action="/delete" method="post" style="display: inline;">
+    Messages by {{user}}: <br/>
+    <li>{{message}}
+    <form action="/delete" method="post" style="display: inline-block">
         <input type="hidden" name="id" value="{{id}}" />
         <button type="submit">Delete</button>
     </form>
+
+    <form action="/edit" method="post" style="display: inline-block">
+        <button type="submit">Edit</button>
+        <input type="hidden" name="id" value="{{id}}" />
+        <input type="text" name="text" placeholder="Enter updated message">
+    </form>
+    </li>
     {{/messages}}
 </ol>
 

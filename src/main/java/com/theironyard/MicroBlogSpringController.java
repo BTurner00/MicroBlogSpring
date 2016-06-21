@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 
 /**
  * Created by Ben on 6/20/16.
@@ -23,7 +22,7 @@ public class MicroBlogSpringController {
     UserRepository users;
 
 
-    //GET route -- reads username from session and adds to model. adds messages arraylist to model
+    //GET route -- reads username from session and adds to model. adds messages from database to model
     @RequestMapping(path = "/", method = RequestMethod.GET)
     public String home(Model model, HttpSession session) {
 
@@ -34,7 +33,7 @@ public class MicroBlogSpringController {
             user = new User(username);
         }
         Iterable<Message> msgs = messages.findAll();
-        model.addAttribute("messages", messages);
+        model.addAttribute("messages", msgs);
         model.addAttribute("user", user);
         return "home";
 
@@ -63,7 +62,7 @@ public class MicroBlogSpringController {
     }
 
 
-    //add message route -- takes input from form and saves to a new message object. adds message to arraylist
+    //add message route -- takes input from form and saves to a new message object. adds message to database
     @RequestMapping(path = "/add-message", method = RequestMethod.POST)
     public String addmessage(String text, HttpSession session) {
 
@@ -74,10 +73,17 @@ public class MicroBlogSpringController {
     }
 
 
-    //delete route -- removes message of given id from arraylist. re-orders all ids higher than one deleted to prevent index/id mismatches
+    //delete route -- removes message of given id from database.
     @RequestMapping(path = "/delete", method = RequestMethod.POST)
     public String delete(int id) {
         messages.delete(id);
+        return "redirect:/";
+    }
+
+    @RequestMapping(path = "/edit", method = RequestMethod.POST)
+    public String edit(int id, String text) {
+        Message message = new Message(id, text);
+        messages.save(message);
         return "redirect:/";
     }
 }
