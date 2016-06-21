@@ -1,5 +1,6 @@
 package com.theironyard;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +16,11 @@ import java.util.ArrayList;
 
 
 public class MicroBlogSpringController {
+    @Autowired
+    MessageRepository messages;
 
-    ArrayList<Message> messages = new ArrayList<>();
+    @Autowired
+    UserRepository users;
 
 
     //GET route -- reads username from session and adds to model. adds messages arraylist to model
@@ -29,6 +33,7 @@ public class MicroBlogSpringController {
         if (username != null) {
             user = new User(username);
         }
+        Iterable<Message> msgs = messages.findAll();
         model.addAttribute("messages", messages);
         model.addAttribute("user", user);
         return "home";
@@ -37,11 +42,24 @@ public class MicroBlogSpringController {
 
 
     //login route --  saves username to session
-    @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public String login(String username, HttpSession session) {
+    @RequestMapping(path="/login", method = RequestMethod.POST)
+    public String login (String username, String password, HttpSession session) throws Exception {
+        User user = users.findByName(username);
+        if (user == null) {
+            user = new User(username, password);
+            users.save(user);
+        } else if (!user.password.equals(password)) {
+            throw new Exception("Wrong password!");
+        }
+
         session.setAttribute("username", username);
         return "redirect:/";
+    }
 
+    @RequestMapping(path="/logout", method = RequestMethod.POST)
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
     }
 
 
@@ -49,31 +67,17 @@ public class MicroBlogSpringController {
     @RequestMapping(path = "/add-message", method = RequestMethod.POST)
     public String addmessage(String text, HttpSession session) {
 
-        Message message = new Message((messages.size()), text);
-        messages.add(message);
+        Message message = new Message(text);
+        messages.save(message);
         return "redirect:/";
 
-    }
-
-    //logout method -- invalidates session
-    @RequestMapping(path = "/logout", method = RequestMethod.POST)
-    public String logout(HttpSession session) {
-        session.invalidate();
-        ;
-        return "redirect:/";
     }
 
 
     //delete route -- removes message of given id from arraylist. re-orders all ids higher than one deleted to prevent index/id mismatches
     @RequestMapping(path = "/delete", method = RequestMethod.POST)
     public String delete(int id) {
-        messages.remove(id);
-
-        for (int i = id; i < messages.size(); i++) {
-            Message temp = messages.get(i);
-            temp.id --;
-            messages.set(i, temp);
-        }
+        messages.delete(id);
         return "redirect:/";
     }
 }
